@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: lwyr-postgres
+    environment:
+      POSTGRES_USER: lwyr_user
+      POSTGRES_PASSWORD: lwyr_password
+      POSTGRES_DB: lwyr_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U lwyr_user -d lwyr_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: lwyr-app
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/lwyr_db
+      SPRING_DATASOURCE_USERNAME: lwyr_user
+      SPRING_DATASOURCE_PASSWORD: lwyr_password
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./src:/app/src
+
+volumes:
+  postgres_data:

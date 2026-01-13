@@ -1,0 +1,17 @@
+FROM eclipse-temurin:21-jdk-alpine
+WORKDIR /app
+
+# Install curl for health checks
+RUN apk add --no-cache curl
+
+# Copy project files
+COPY . .
+RUN chmod +x gradlew
+
+# Build without running tests (tests will be run separately with testcontainers)
+RUN ./gradlew bootJar -x test --no-daemon
+
+EXPOSE 8080
+
+# For local testing, use this entrypoint
+# CMD ["java", "-jar", "app.jar"]
