@@ -4,30 +4,53 @@
 Legal RAG agent trained on Lebanese law PDFs (5-10 documents). Provides translation (Arabic, French, English) and conversational Q&A with citations.
 
 ## Tech Stack
-- Language: Kotlin
-- Framework: Spring Boot
-- Database: PostgreSQL with pgvector for embeddings
+- Language: Kotlin 2.0.21
+- Framework: Spring Boot 3.4.0
+- Database: PostgreSQL 17 with pgvector (extension enabled)
 - LLM: OpenRouter API (free Chinese models: Qwen, DeepSeek, GLM)
-- Embedding: Open-source (sentence-transformers or similar)
+- Java: 21
+- Build: Gradle 8.10
+
+## Project Structure
+```
+src/main/kotlin/com/lwyr/ai/
+├── LwyrApplication.kt              # Entry point
+├── controller/                     # REST controllers
+│   └── AuthController.kt
+├── dto/                            # Data transfer objects
+│   └── auth/AuthDto.kt
+├── entity/                         # JPA entities
+│   └── User.kt
+├── repository/                     # Spring Data repositories
+│   └── UserRepository.kt
+├── service/                        # Business logic
+│   └── AuthService.kt
+├── security/                       # Security configuration
+│   └── SecurityConfig.kt
+└── exception/                      # Error handling
+    ├── AppExceptions.kt
+    └── GlobalExceptionHandler.kt
+```
 
 ## Authentication
 - Basic Auth: credentials sent with every request
+- Password: BCrypt hashed, minimum 8 characters
 - Endpoints: `POST /auth/signup`, `POST /auth/login`
-- Password: minimum 8 characters
+- Role-based access: ADMIN role required for `/admin/**`
 
 ## API Endpoints
 
-### Auth
-- `POST /auth/signup`
-- `POST /auth/login`
+### Auth (COMPLETED)
+- `POST /auth/signup` - Register new user
+- `POST /auth/login` - Login with Basic Auth
 
-### Translation
+### Translation (PENDING)
 - `POST /translation`
   - Body: `{ "text": string, "source": "ar"|"en"|"fr", "target": "ar"|"en"|"fr" }`
   - Legal system prompt always applied
   - Raw text only
 
-### Conversations (singular resource naming)
+### Conversations (PENDING)
 - `POST /conversation` - create new conversation
 - `GET /conversations` - list user's conversations
 - `GET /conversation/{id}` - get conversation with message history
@@ -36,27 +59,27 @@ Legal RAG agent trained on Lebanese law PDFs (5-10 documents). Provides translat
   - Body: `{ "question": string }`
   - Returns answer with citations
 
-### Admin
+### Admin (PENDING)
 - `POST /admin/train` - admin only
   - Trains embeddings on PDFs in resources folder
   - Auto-trains untrained PDFs on startup
 
 ## Database Schema
 
-### Users
+### Users (COMPLETED)
 - id (UUID)
 - email (unique)
-- password_hash
+- password_hash (BCrypt)
 - role (USER | ADMIN)
 - created_at, updated_at
 
-### Conversations
+### Conversations (PENDING)
 - id (UUID)
 - user_id (FK)
 - title
 - created_at, updated_at
 
-### Messages
+### Messages (PENDING)
 - id (UUID)
 - conversation_id (FK)
 - role (USER | ASSISTANT)
@@ -64,7 +87,7 @@ Legal RAG agent trained on Lebanese law PDFs (5-10 documents). Provides translat
 - citations (JSONB) - source PDF, page, relevant excerpts
 - created_at
 
-### TrainedDocuments
+### TrainedDocuments (PENDING)
 - id (UUID)
 - filename
 - checksum (to detect changes)
@@ -82,9 +105,14 @@ You are a legal assistant specializing in Lebanese law. Answer based only on pro
 ## Build Commands
 ```bash
 ./gradlew build                    # Full build
-./gradlew test                    # All tests
+./gradlew compileKotlin            # Compile sources
+./gradlew test                     # All tests
 ./gradlew test --tests "*Test"    # Single test class
-./gradlew bootRun                 # Run application
+./gradlew bootRun                  # Run application
+
+# Docker
+docker-compose up -d               # Start PostgreSQL
+docker-compose down                # Stop containers
 ```
 
 ## Code Standards
@@ -107,16 +135,15 @@ You are a legal assistant specializing in Lebanese law. Answer based only on pro
 - Collection types: List, Map, Set (not Array)
 
 ### Error Handling
-- Use Result<T> or sealed classes for operations that fail
-- Custom exceptions with meaningful messages
-- Global exception handler with proper HTTP status codes
+- Custom exceptions extending RuntimeException
+- GlobalExceptionHandler with proper HTTP status codes
 - Log errors with context, never expose stack traces
 
 ### Logging
 - Use SLF4J/Kotlin logging
 - Log at appropriate levels (ERROR, WARN, INFO, DEBUG)
-- Include request IDs and user IDs in logs
-- No sensitive data in logs
+- Include user IDs in logs
+- No sensitive data (passwords, tokens) in logs
 
 ### REST
 - Proper HTTP methods (GET, POST, PUT, DELETE)
@@ -125,13 +152,20 @@ You are a legal assistant specializing in Lebanese law. Answer based only on pro
 - Idempotent operations where appropriate
 
 ### Testing
+- Use Testcontainers for integration tests
 - Unit tests for services
 - Integration tests for controllers
 - Mock external dependencies
 - Test error cases and edge cases
 
 ### Security
-- Passwords: bcrypt or Argon2
+- Passwords: BCrypt
 - Input validation on all endpoints
-- SQL injection prevention
-- CORS configured properly
+- SQL injection prevention via JPA
+- Basic Auth, stateless sessions
+- Role-based endpoint protection
+
+## Docker Environment
+- PostgreSQL 17 with pgvector extension
+- Testcontainers for integration tests
+- Health checks on database container
