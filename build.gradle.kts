@@ -28,7 +28,6 @@ dependencies {
 
     // PostgreSQL
     implementation("org.postgresql:postgresql:42.7.1")
-    implementation("pgvector:pgvector:0.3.1")
 
     // JWT
     implementation("io.jsonwebtoken:jjwt-api:0.12.6")
