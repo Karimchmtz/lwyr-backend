@@ -49,6 +49,9 @@ dependencies {
     // YAML Configuration
     implementation("org.yaml:snakeyaml:2.2")
 
+    // Logging
+    implementation("io.github.microutils:kotlin-logging-jvm:3.0.5")
+
     // Testing
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.security:spring-security-test")

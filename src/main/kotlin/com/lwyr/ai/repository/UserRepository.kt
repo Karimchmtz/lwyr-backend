@@ -3,6 +3,7 @@ package com.lwyr.ai.repository
 import com.lwyr.ai.entity.User
 import com.lwyr.ai.entity.UserRole
 import org.jooq.DSLContext
+import org.jooq.Record
 import org.jooq.impl.DSL.*
 import org.springframework.stereotype.Repository
 import java.time.OffsetDateTime
@@ -19,41 +20,25 @@ class UserRepository(private val dsl: DSLContext) {
     private val createdAt = field("created_at", OffsetDateTime::class.java)
     private val updatedAt = field("updated_at", OffsetDateTime::class.java)
 
+    private val allFields = arrayOf(id, email, passwordHash, role, createdAt, updatedAt)
+
     fun findById(userId: UUID): User? {
-        return dsl.select(id, email, passwordHash, role, createdAt, updatedAt)
+        return dsl.select(*allFields)
             .from(users)
             .where(id.eq(userId))
-            .fetchOne { record ->
-                User(
-                    id = record.get(id)!!,
-                    email = record.get(email)!!,
-                    passwordHash = record.get(passwordHash)!!,
-                    role = UserRole.valueOf(record.get(role)!!),
-                    createdAt = record.get(createdAt)!!,
-                    updatedAt = record.get(updatedAt)!!
-                )
-            }
+            .fetchOne(::mapToUser)
     }
 
     fun findByEmail(userEmail: String): User? {
-        return dsl.select(id, email, passwordHash, role, createdAt, updatedAt)
+        return dsl.select(*allFields)
             .from(users)
             .where(email.eq(userEmail))
-            .fetchOne { record ->
-                User(
-                    id = record.get(id)!!,
-                    email = record.get(email)!!,
-                    passwordHash = record.get(passwordHash)!!,
-                    role = UserRole.valueOf(record.get(role)!!),
-                    createdAt = record.get(createdAt)!!,
-                    updatedAt = record.get(updatedAt)!!
-                )
-            }
+            .fetchOne(::mapToUser)
     }
 
     fun existsByEmail(userEmail: String): Boolean {
         return dsl.fetchExists(
-            dsl.select(id)
+            dsl.selectOne()
                 .from(users)
                 .where(email.eq(userEmail))
         )
@@ -81,18 +66,9 @@ class UserRepository(private val dsl: DSLContext) {
     }
 
     fun findAll(): List<User> {
-        return dsl.select(id, email, passwordHash, role, createdAt, updatedAt)
+        return dsl.select(*allFields)
             .from(users)
-            .fetch { record ->
-                User(
-                    id = record.get(id)!!,
-                    email = record.get(email)!!,
-                    passwordHash = record.get(passwordHash)!!,
-                    role = UserRole.valueOf(record.get(role)!!),
-                    createdAt = record.get(createdAt)!!,
-                    updatedAt = record.get(updatedAt)!!
-                )
-            }
+            .fetch(::mapToUser)
     }
 
     fun deleteById(userId: UUID) {
@@ -104,4 +80,13 @@ class UserRepository(private val dsl: DSLContext) {
     fun deleteAll() {
         dsl.deleteFrom(users).execute()
     }
+
+    private fun mapToUser(record: Record): User = User(
+        id = record[id]!!,
+        email = record[email]!!,
+        passwordHash = record[passwordHash]!!,
+        role = UserRole.valueOf(record[role]!!),
+        createdAt = record[createdAt]!!,
+        updatedAt = record[updatedAt]!!
+    )
 }

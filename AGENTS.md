@@ -19,14 +19,16 @@ src/main/kotlin/com/lwyr/ai/
 │   └── AuthController.kt
 ├── dto/                            # Data transfer objects
 │   └── auth/AuthDto.kt
-├── entity/                         # JPA entities
+├── entity/                         # Domain entities
 │   └── User.kt
-├── repository/                     # Spring Data repositories
+├── repository/                     # JOOQ repositories
 │   └── UserRepository.kt
 ├── service/                        # Business logic
 │   └── AuthService.kt
 ├── security/                       # Security configuration
 │   └── SecurityConfig.kt
+├── config/                         # Configuration classes
+│   └── DatabaseConfig.kt
 └── exception/                      # Error handling
     ├── AppExceptions.kt
     └── GlobalExceptionHandler.kt
@@ -161,7 +163,7 @@ docker-compose down                # Stop containers
 ### Security
 - Passwords: BCrypt
 - Input validation on all endpoints
-- SQL injection prevention via JPA
+- SQL injection prevention via JOOQ
 - Basic Auth, stateless sessions
 - Role-based endpoint protection
 

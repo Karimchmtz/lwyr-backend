@@ -3,10 +3,8 @@ spring:
     url: jdbc:tc:postgresql:17-alpine:///lwyr_db
     username: test
     password: test
-  jpa:
-    hibernate:
-      ddl-auto: create-drop
-    show-sql: false
+  flyway:
+    enabled: true
 
 logging:
   level:
