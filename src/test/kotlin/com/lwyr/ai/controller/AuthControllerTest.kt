@@ -3,7 +3,6 @@ package com.lwyr.ai.controller
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.lwyr.ai.dto.auth.LoginRequest
 import com.lwyr.ai.dto.auth.SignupRequest
-import com.lwyr.ai.entity.UserRole
 import com.lwyr.ai.repository.UserRepository
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
@@ -16,6 +15,8 @@ import org.springframework.http.MediaType
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.ResultActions
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.testcontainers.junit.jupiter.Testcontainers
 import kotlin.text.Charsets.UTF_8
 
@@ -57,12 +58,10 @@ class AuthControllerTest {
             val request = signupRequest()
 
             performSignup(request)
-                .andExpect {
-                    status { isCreated() }
-                    jsonPath("$.userId") { exists() }
-                    jsonPath("$.email") { value("test@example.com") }
-                    jsonPath("$.role") { value("USER") }
-                }
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.userId").exists())
+                .andExpect(jsonPath("$.email").value("test@example.com"))
+                .andExpect(jsonPath("$.role").value("USER"))
         }
 
         @Test
@@ -71,9 +70,7 @@ class AuthControllerTest {
             val request = signupRequest(email = "")
 
             performSignup(request)
-                .andExpect {
-                    status { isBadRequest() }
-                }
+                .andExpect(status().isBadRequest())
         }
 
         @Test
@@ -82,9 +79,7 @@ class AuthControllerTest {
             val request = signupRequest(email = "invalid-email")
 
             performSignup(request)
-                .andExpect {
-                    status { isBadRequest() }
-                }
+                .andExpect(status().isBadRequest())
         }
 
         @Test
@@ -93,9 +88,7 @@ class AuthControllerTest {
             val request = signupRequest(password = "short")
 
             performSignup(request)
-                .andExpect {
-                    status { isBadRequest() }
-                }
+                .andExpect(status().isBadRequest())
         }
 
         @Test
@@ -105,9 +98,7 @@ class AuthControllerTest {
 
             performSignup(request)
             performSignup(request)
-                .andExpect {
-                    status { isConflict() }
-                }
+                .andExpect(status().isConflict())
         }
 
         private fun performSignup(request: String): ResultActions {
@@ -144,12 +135,10 @@ class AuthControllerTest {
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(request.toByteArray(UTF_8))
             )
-                .andExpect {
-                    status { isOk() }
-                    jsonPath("$.userId") { exists() }
-                    jsonPath("$.email") { value("test@example.com") }
-                    jsonPath("$.role") { value("USER") }
-                }
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.userId").exists())
+                .andExpect(jsonPath("$.email").value("test@example.com"))
+                .andExpect(jsonPath("$.role").value("USER"))
         }
 
         @Test
@@ -162,9 +151,7 @@ class AuthControllerTest {
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(request.toByteArray(UTF_8))
             )
-                .andExpect {
-                    status { isUnauthorized() }
-                }
+                .andExpect(status().isUnauthorized())
         }
 
         @Test
@@ -177,9 +164,7 @@ class AuthControllerTest {
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(request.toByteArray(UTF_8))
             )
-                .andExpect {
-                    status { isUnauthorized() }
-                }
+                .andExpect(status().isUnauthorized())
         }
     }
 
