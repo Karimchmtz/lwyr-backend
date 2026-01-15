@@ -10,7 +10,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 
-private val logger = KotlinLogging.logger {}
+private val logger = KotlinLogging.logger(GlobalExceptionHandler::class.java.name)
 
 @RestControllerAdvice
 class GlobalExceptionHandler {

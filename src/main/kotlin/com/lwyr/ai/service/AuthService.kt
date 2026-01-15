@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service
 import java.time.OffsetDateTime
 import java.util.UUID
 
-private val logger = KotlinLogging.logger {}
+private val logger = KotlinLogging.logger(AuthService::class.java.name)
 
 @Service
 class AuthService(
