@@ -3,7 +3,7 @@ plugins {
     id("io.spring.dependency-management") version "1.1.6"
     kotlin("jvm") version "2.0.21"
     kotlin("plugin.spring") version "2.0.21"
-    kotlin("plugin.jpa") version "2.0.21"
+    id("nu.studer.jooq") version "9.0"
 }
 
 group = "com.lwyr"
@@ -22,9 +22,13 @@ repositories {
 dependencies {
     // Spring Boot Starters
     implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("org.springframework.boot:spring-boot-starter-jdbc")
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-validation")
+
+    // JOOQ
+    implementation("org.jooq:jooq")
+    implementation("org.jooq:jooq-kotlin")
 
     // PostgreSQL
     implementation("org.postgresql:postgresql:42.7.1")
@@ -57,3 +61,4 @@ dependencies {
 tasks.withType<Test> {
     useJUnitPlatform()
 }
+

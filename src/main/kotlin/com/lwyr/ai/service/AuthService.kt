@@ -10,7 +10,8 @@ import com.lwyr.ai.repository.UserRepository
 import org.slf4j.LoggerFactory
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
+import java.time.OffsetDateTime
+import java.util.UUID
 
 @Service
 class AuthService(
@@ -20,7 +21,6 @@ class AuthService(
 
     private val logger = LoggerFactory.getLogger(AuthService::class.java)
 
-    @Transactional
     fun signup(request: SignupRequest): User {
         logger.info("Processing signup for email: {}", request.email)
 
@@ -29,10 +29,14 @@ class AuthService(
             throw ResourceAlreadyExistsException("Email already registered")
         }
 
+        val now = OffsetDateTime.now()
         val user = User(
+            id = UUID.randomUUID(),
             email = request.email,
             passwordHash = passwordEncoder.encode(request.password),
-            role = UserRole.USER
+            role = UserRole.USER,
+            createdAt = now,
+            updatedAt = now
         )
 
         val savedUser = userRepository.save(user)
