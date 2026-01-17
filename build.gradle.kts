@@ -65,11 +65,13 @@ tasks.named("build") {
     dependsOn("test")
 }
 
-tasks.named("build") {
-    dependsOn("test")
-}
-
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+
+kotlin {
+    compilerOptions {
+        allWarningsAsErrors.set(true)
+    }
 }
 

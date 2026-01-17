@@ -1,5 +1,6 @@
 package com.lwyr.ai.integration
 
+import org.assertj.core.api.Assertions.assertThat
 import com.lwyr.ai.dto.auth.LoginRequest
 import com.lwyr.ai.dto.auth.SignupRequest
 import org.junit.jupiter.api.Test
@@ -27,11 +28,12 @@ class AuthControllerIT : BaseIT() {
     @Test
     fun testSignupSuccess() {
         val request = createSignupRequest()
-        performSignup(request)
-            .andExpect(status().isCreated)
-            .andExpect(jsonPath("$.userId").exists())
-            .andExpect(jsonPath("$.email").value("test@example.com"))
-            .andExpect(jsonPath("$.role").value("USER"))
+        val result = performSignup(request).andReturn()
+        val response = objectMapper.readValue(result.response.contentAsString, com.lwyr.ai.dto.auth.AuthResponse::class.java)
+        assertThat(response.userId).isNotNull()
+        assertThat(response.email).isEqualTo("test@example.com")
+        assertThat(response.role).isEqualTo("USER")
+        assertThat(result.response.status).isEqualTo(201)
     }
 
     @Test
@@ -64,11 +66,12 @@ class AuthControllerIT : BaseIT() {
         val signupRequest = createSignupRequest()
         performSignup(signupRequest)  // Setup user
         val loginRequest = createLoginRequest()
-        performLogin(loginRequest)
-            .andExpect(status().isOk)
-            .andExpect(jsonPath("$.userId").exists())
-            .andExpect(jsonPath("$.email").value("test@example.com"))
-            .andExpect(jsonPath("$.role").value("USER"))
+        val result = performLogin(loginRequest).andReturn()
+        val response = objectMapper.readValue(result.response.contentAsString, com.lwyr.ai.dto.auth.AuthResponse::class.java)
+        assertThat(response.userId).isNotNull()
+        assertThat(response.email).isEqualTo("test@example.com")
+        assertThat(response.role).isEqualTo("USER")
+        assertThat(result.response.status).isEqualTo(200)
     }
 
     @Test

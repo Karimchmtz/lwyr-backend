@@ -133,6 +133,7 @@ No specific lint or format commands configured. Follow code standards manually o
 - No wildcard imports
 - Group: Kotlin → Spring → Project
 - Sort alphabetically within groups
+- No wildcard imports
 
 ### Naming
 - Classes: PascalCase (UserService, TranslationController)
