@@ -1,118 +1,82 @@
 # lwyr-backend
 
-## Overview
-Legal RAG agent trained on Lebanese law PDFs (5-10 documents). Provides translation (Arabic, French, English) and conversational Q&A with citations.
+A legal RAG (Retrieval-Augmented Generation) agent trained on Lebanese law documents. Provides multilingual translation and conversational Q&A with citations.
+
+## Features
+- **Translation**: Supports Arabic, French, and English for legal texts.
+- **Conversations**: Interactive Q&A with source citations from trained PDFs.
+- **Authentication**: Secure user management with role-based access.
+- **Admin Tools**: Train embeddings on new legal documents.
 
 ## Tech Stack
-- Language: Kotlin 2.0.21
-- Framework: Spring Boot 3.4.0
-- Database: PostgreSQL 17 with pgvector (extension enabled)
-- LLM: OpenRouter API (free Chinese models: Qwen, DeepSeek, GLM)
-- Java: 21
-- Build: Gradle 8.10
+- **Language**: Kotlin 2.0.21
+- **Framework**: Spring Boot 3.4.0
+- **Database**: PostgreSQL 17 with pgvector
+- **LLM**: OpenRouter API (Qwen, DeepSeek, GLM models)
+- **Build**: Gradle 8.10
+- **Java**: 21
+
+## Prerequisites
+- JDK 21
+- Docker (for PostgreSQL)
+- Gradle (or use wrapper)
+
+## Getting Started
+
+1. **Clone the repo**:
+   ```bash
+   git clone <repo-url>
+   cd lwyr-backend
+   ```
+
+2. **Start PostgreSQL**:
+   ```bash
+   docker-compose up -d
+   ```
+
+3. **Build and run**:
+   ```bash
+   ./gradlew build
+   ./gradlew bootRun
+   ```
+
+4. **API available at**: `http://localhost:8080`
+
+## API Endpoints
+
+### Authentication
+- `POST /auth/signup` - Register user
+- `POST /auth/login` - Login (returns token)
+
+### Core Features
+- `POST /translation` - Translate legal text
+- `POST /conversation` - Start Q&A session
+- `POST /conversation/{id}/message` - Ask questions
+- `GET /conversations` - List user conversations
+- `POST /admin/train` - Train on new PDFs (admin only)
 
 ## Project Structure
 ```
 src/main/kotlin/com/lwyr/ai/
-├── LwyrApplication.kt              # Entry point
-├── controller/                     # REST controllers
-│   └── AuthController.kt
-├── dto/                            # Data transfer objects
-│   └── auth/AuthDto.kt
-├── entity/                         # Domain entities
-│   └── User.kt
-├── repository/                     # JOOQ repositories
-│   └── UserRepository.kt
-├── service/                        # Business logic
-│   └── AuthService.kt
-├── security/                       # Security configuration
-│   └── SecurityConfig.kt
-├── config/                         # Configuration classes
-│   └── DatabaseConfig.kt
-└── exception/                      # Error handling
-    ├── AppExceptions.kt
-    └── GlobalExceptionHandler.kt
+├── LwyrApplication.kt           # Main entry point
+├── controller/                  # REST endpoints
+├── dto/                         # Data transfer objects
+├── entity/                      # Domain models
+├── repository/                  # Data access (JOOQ)
+├── service/                     # Business logic
+├── security/                    # Auth config
+├── config/                      # App configuration
+└── exception/                   # Error handling
 ```
 
-## Authentication
-- Basic Auth: credentials sent with every request
-- Password: BCrypt hashed, minimum 8 characters
-- Endpoints: `POST /auth/signup`, `POST /auth/login`
-- Role-based access: ADMIN role required for `/admin/**`
-
-## API Endpoints
-
-### Auth (COMPLETED)
-- `POST /auth/signup` - Register new user
-- `POST /auth/login` - Login with Basic Auth
-
-### Translation (PENDING)
-- `POST /translation`
-  - Body: `{ "text": string, "source": "ar"|"en"|"fr", "target": "ar"|"en"|"fr" }`
-  - Legal system prompt always applied
-  - Raw text only
-
-### Conversations (PENDING)
-- `POST /conversation` - create new conversation
-- `GET /conversations` - list user's conversations
-- `GET /conversation/{id}` - get conversation with message history
-- `DELETE /conversation/{id}`
-- `POST /conversation/{id}/message` - ask question
-  - Body: `{ "question": string }`
-  - Returns answer with citations
-
-### Admin (PENDING)
-- `POST /admin/train` - admin only
-  - Trains embeddings on PDFs in resources folder
-  - Auto-trains untrained PDFs on startup
-
-## Database Schema
-
-### Users (COMPLETED)
-- id (UUID)
-- email (unique)
-- password_hash (BCrypt)
-- role (USER | ADMIN)
-- created_at, updated_at
-
-### Conversations (PENDING)
-- id (UUID)
-- user_id (FK)
-- title
-- created_at, updated_at
-
-### Messages (PENDING)
-- id (UUID)
-- conversation_id (FK)
-- role (USER | ASSISTANT)
-- content
-- citations (JSONB) - source PDF, page, relevant excerpts
-- created_at
-
-### TrainedDocuments (PENDING)
-- id (UUID)
-- filename
-- checksum (to detect changes)
-- embedded_at
-- chunk_count
-
-## System Prompts
-
-### Translation
-You are a legal translator specializing in Lebanese law. Translate accurately preserving legal terminology.
-
-### RAG
-You are a legal assistant specializing in Lebanese law. Answer based only on provided documents. Always cite sources. Stay in character as a legal professional.
+## Database
+Uses PostgreSQL with pgvector for embeddings. Schema includes users, conversations, messages, and trained documents. Migrations via Flyway.
 
 ## Build Commands
 ```bash
-./gradlew build                    # Full build
-./gradlew compileKotlin            # Compile sources
-./gradlew test                     # All tests
-./gradlew test --tests "*Test"    # Single test class
-./gradlew bootRun                  # Run application
-
-# Docker
-docker-compose up -d               # Start PostgreSQL
-docker-compose down                # Stop containers
+./gradlew build                 # Build (includes tests)
+./gradlew test                  # Run tests
+./gradlew test --tests "*Test"  # Run test classes
+./gradlew bootRun               # Start app
+./gradlew clean                 # Clean build
 ```

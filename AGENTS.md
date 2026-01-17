@@ -106,16 +106,26 @@ You are a legal assistant specializing in Lebanese law. Answer based only on pro
 
 ## Build Commands
 ```bash
-./gradlew build                    # Full build
+./gradlew build                    # Full build (includes tests since build depends on test)
 ./gradlew compileKotlin            # Compile sources
-./gradlew test                     # All tests
-./gradlew test --tests "*Test"    # Single test class
+./gradlew test                     # Run all tests
+./gradlew test --tests "*Test"    # Run all test classes matching pattern
+./gradlew test --tests "com.lwyr.ai.AuthServiceTest"  # Run specific test class
+./gradlew test --tests "com.lwyr.ai.AuthServiceTest.testLogin"  # Run specific test method
 ./gradlew bootRun                  # Run application
 
 # Docker
 docker-compose up -d               # Start PostgreSQL
 docker-compose down                # Stop containers
 ```
+
+### Linting and Formatting
+No specific lint or format commands configured. Follow code standards manually or use IDE formatting.
+
+### Testing Guidelines
+- Tests are located in `src/test/kotlin/`
+- Use JUnit 5 with Testcontainers for integration tests
+- Test database uses PostgreSQL with Testcontainers
 
 ## Code Standards
 
