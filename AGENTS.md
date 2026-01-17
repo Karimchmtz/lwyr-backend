@@ -187,6 +187,7 @@ No specific lint or format commands configured. Follow code standards manually o
 ### Code Organization
 - **Private Methods**: Place all private methods at the bottom of classes or files. Public/protected methods come first, followed by private ones. This improves readability by prioritizing the API.
 - **File Structure**: Group related functionality together; use blank lines to separate logical sections (e.g., imports, class definition, methods).
+- **Comments**: Avoid dumb comments; code should be self-documenting. Use meaningful names and structure instead of redundant explanations.
 
 ### Compilation
 - **No Warnings**: Ensure zero compilation warnings in Kotlin/Gradle builds. Treat warnings as errors (`kotlinOptions.allWarningsAsErrors = true` in build.gradle.kts). Fix issues like unused variables, deprecated APIs, or unchecked casts immediately.
