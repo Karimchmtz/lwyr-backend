@@ -61,6 +61,14 @@ dependencies {
     testRuntimeOnly("com.mysql:mysql-connector-j")
 }
 
+tasks.named("build") {
+    dependsOn("test")
+}
+
+tasks.named("build") {
+    dependsOn("test")
+}
+
 tasks.withType<Test> {
     useJUnitPlatform()
 }
