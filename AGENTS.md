@@ -181,3 +181,25 @@ No specific lint or format commands configured. Follow code standards manually o
 - PostgreSQL 17 with pgvector extension
 - Testcontainers for integration tests
 - Health checks on database container
+
+## Coding Style
+
+### Code Organization
+- **Private Methods**: Place all private methods at the bottom of classes or files. Public/protected methods come first, followed by private ones. This improves readability by prioritizing the API.
+- **File Structure**: Group related functionality together; use blank lines to separate logical sections (e.g., imports, class definition, methods).
+
+### Compilation
+- **No Warnings**: Ensure zero compilation warnings in Kotlin/Gradle builds. Treat warnings as errors (`kotlinOptions.allWarningsAsErrors = true` in build.gradle.kts). Fix issues like unused variables, deprecated APIs, or unchecked casts immediately.
+
+### Imports
+- **Static Imports**: Use static imports for frequently used methods/constants (e.g., `import static org.assertj.core.api.Assertions.assertThat`). Limit to avoid clutter; prefer for AssertJ, JUnit, or utility classes.
+
+### Testing
+- **Avoid JSON Path**: Do not use `jsonPath` for assertions. Deserialize responses to real DTO/model classes and use `assertThat` for type-safe checks (e.g., `assertThat(response.userId).isNotNull()`).
+- **Real Classes**: Test with actual objects; mock services/repositories as needed, but assert on domain objects for accuracy.
+- **Examples**:
+  - Instead of: `.andExpect(jsonPath("$.email").value("test@example.com"))`
+  - Use: `val response = objectMapper.readValue(result.response.contentAsString, AuthResponse::class.java); assertThat(response.email).isEqualTo("test@example.com")`
+- **High Accuracy**: Combine with existing testing guidelines for comprehensive coverage.
+
+Follow these rules to maintain clean, warning-free code with robust, readable tests.
