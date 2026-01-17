@@ -191,6 +191,7 @@ No specific lint or format commands configured. Follow code standards manually o
 
 ### Compilation
 - **No Warnings**: Ensure zero compilation warnings in Kotlin/Gradle builds. Treat warnings as errors (`kotlinOptions.allWarningsAsErrors = true` in build.gradle.kts). Fix issues like unused variables, deprecated APIs, or unchecked casts immediately.
+- **Pre-Commit Run**: Always run the project (e.g., `./gradlew build`) before committing to ensure functionality and tests pass.
 
 ### Imports
 - **Static Imports**: Use static imports for frequently used methods/constants (e.g., `import static org.assertj.core.api.Assertions.assertThat`). Limit to avoid clutter; prefer for AssertJ, JUnit, or utility classes.
