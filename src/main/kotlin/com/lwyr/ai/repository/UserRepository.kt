@@ -2,10 +2,11 @@ package com.lwyr.ai.repository
 
 import com.lwyr.ai.entity.User
 import com.lwyr.ai.entity.UserRole
+import org.springframework.stereotype.Repository
 import org.jooq.DSLContext
 import org.jooq.Record
-import org.jooq.impl.DSL.*
-import org.springframework.stereotype.Repository
+import org.jooq.impl.DSL.table
+import org.jooq.impl.DSL.field
 import java.time.OffsetDateTime
 import java.util.UUID
 
