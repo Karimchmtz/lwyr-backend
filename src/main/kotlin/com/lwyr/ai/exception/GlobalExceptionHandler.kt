@@ -62,6 +62,19 @@ class GlobalExceptionHandler {
         return createErrorResponse("Forbidden", ex.message ?: "Access denied", HttpStatus.FORBIDDEN)
     }
 
+    @ExceptionHandler(OpenRouterException::class)
+    fun handleOpenRouterException(ex: OpenRouterException): ResponseEntity<ErrorResponse> {
+        logger.warn { "OpenRouter error: ${ex.message}" }
+        val status = when (ex) {
+            is OpenRouterBadRequestException -> HttpStatus.BAD_REQUEST
+            is OpenRouterUnauthorizedException -> HttpStatus.UNAUTHORIZED
+            is OpenRouterRateLimitException -> HttpStatus.TOO_MANY_REQUESTS
+            is OpenRouterServerException -> HttpStatus.INTERNAL_SERVER_ERROR
+            else -> HttpStatus.INTERNAL_SERVER_ERROR
+        }
+        return createErrorResponse("OpenRouter Error", ex.message ?: "OpenRouter API error", status)
+    }
+
     @ExceptionHandler(Exception::class)
     fun handleGenericException(ex: Exception): ResponseEntity<ErrorResponse> {
         logger.error(ex) { "Unexpected error occurred" }

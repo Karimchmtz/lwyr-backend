@@ -52,8 +52,23 @@ dependencies {
     // Logging
     implementation("io.github.microutils:kotlin-logging-jvm:3.0.5")
 
+    // LangChain4j for LLM/embeddings
+    implementation("dev.langchain4j:langchain4j:0.36.0")
+    implementation("dev.langchain4j:langchain4j-open-ai:0.36.0")
+    implementation("dev.langchain4j:langchain4j-document-parser-apache-pdfbox:0.36.0")
+
+    // PDF processing
+    implementation("org.apache.pdfbox:pdfbox:3.0.2")
+
+    // pgvector support for vector similarity search
+    implementation("com.pgvector:pgvector:0.1.5")
+
+    // JSON parsing
+    implementation("org.json:json:20231013")
+
     // Testing
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.wiremock:wiremock-standalone:3.9.1")
     testImplementation("org.springframework.security:spring-security-test")
     testImplementation("org.testcontainers:testcontainers:1.20.1")
     testImplementation("org.testcontainers:postgresql:1.20.1")
