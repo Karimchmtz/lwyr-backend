@@ -9,32 +9,47 @@ build/
 *.ipr
 *.iws
 .vscode/
-.project
-.classpath
-.settings/
-*.sublime-*
+*.swp
+*.swo
 
 # OS
 .DS_Store
 Thumbs.db
-*.swp
-*.swo
-*~
 
+# Environment
+.env
+.env.local
+*.log
 
-# Application
-application-local.yml
-application-local.properties
-application-dev.yml
-application-dev.properties
+# Generated
+/generated-sources/
+/generated-tests/
 
-# Secrets
+# Build outputs
+/out/
+build/
+dist/
+
+# Test reports
+test-results/
+htmlcov/
+
+# Coverage
+.coverage
+*.coveragereport
+
+# Kotlin
+.kotlin/
+.ki/
+
+# Docker
+.docker/
+
+# Database
+*.db
+*.sqlite
+
+# Secrets (never commit)
 *.pem
 *.key
 *.crt
-secrets/
-credentials/
-
-# Logs
-*.log
-logs/
