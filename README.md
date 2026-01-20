@@ -1,4 +1,4 @@
-# lwyr-backend
+# Lwyr - Legal RAG Agent
 
 A legal RAG (Retrieval-Augmented Generation) agent trained on Lebanese law documents. Provides multilingual translation and conversational Q&A with citations.
 
@@ -9,17 +9,15 @@ A legal RAG (Retrieval-Augmented Generation) agent trained on Lebanese law docum
 - **Admin Tools**: Train embeddings on new legal documents.
 
 ## Tech Stack
-- **Language**: Kotlin 2.0.21
-- **Framework**: Spring Boot 3.4.0
+- **Language**: Python 3.11+
+- **Framework**: FastAPI 0.115+
 - **Database**: PostgreSQL 17 with pgvector
 - **LLM**: OpenRouter API (Qwen, DeepSeek, GLM models)
-- **Build**: Gradle 8.10
-- **Java**: 21
+- **Build**: uv / Poetry
 
 ## Prerequisites
-- JDK 21
-- Docker (for PostgreSQL)
-- Gradle (or use wrapper)
+- Python 3.11+
+- Docker (for PostgreSQL with pgvector)
 
 ## Getting Started
 
@@ -34,49 +32,78 @@ A legal RAG (Retrieval-Augmented Generation) agent trained on Lebanese law docum
    docker-compose up -d
    ```
 
-3. **Build and run**:
+3. **Install dependencies**:
    ```bash
-   ./gradlew build
-   ./gradlew bootRun
+   python -m venv venv
+   source venv/bin/activate
+   pip install -e .
    ```
 
-4. **API available at**: `http://localhost:8080`
+4. **Run**:
+   ```bash
+   uvicorn app.main:app --reload --port 8080
+   ```
+
+5. **API available at**: `http://localhost:8080`
+   - **Docs**: `http://localhost:8080/docs`
 
 ## API Endpoints
 
 ### Authentication
 - `POST /auth/signup` - Register user
-- `POST /auth/login` - Login (returns token)
+- `POST /auth/login` - Login (Basic Auth)
 
 ### Core Features
 - `POST /translation` - Translate legal text
-- `POST /conversation` - Start Q&A session
-- `POST /conversation/{id}/message` - Ask questions
+- `POST /conversations` - Start Q&A session
+- `POST /conversations/{id}/message` - Ask questions
 - `GET /conversations` - List user conversations
 - `POST /admin/train` - Train on new PDFs (admin only)
 
 ## Project Structure
 ```
-src/main/kotlin/com/lwyr/ai/
-├── LwyrApplication.kt           # Main entry point
-├── controller/                  # REST endpoints
-├── dto/                         # Data transfer objects
-├── entity/                      # Domain models
-├── repository/                  # Data access (JOOQ)
-├── service/                     # Business logic
-├── security/                    # Auth config
-├── config/                      # App configuration
-└── exception/                   # Error handling
+app/
+├── main.py                    # FastAPI entry point
+├── config.py                  # Settings (Pydantic)
+├── database.py                # SQLAlchemy engine
+├── security.py                # Auth utilities
+├── models/                    # Database tables
+├── repositories/              # Data access layer
+├── services/                  # Business logic
+└── api/
+    ├── routes/                # REST endpoints
+    └── schemas/               # Pydantic DTOs
+tests/
+├── unit/
+└── integration/
+resources/pdfs/                # Legal PDFs for RAG
 ```
 
 ## Database
-Uses PostgreSQL with pgvector for embeddings. Schema includes users, conversations, messages, and trained documents. Migrations via Flyway.
+Uses PostgreSQL with pgvector for embeddings. Schema includes users, conversations, messages, and trained documents. Migrations via Alembic.
 
-## Build Commands
+## Commands
+
 ```bash
-./gradlew build                 # Build (includes tests)
-./gradlew test                  # Run tests
-./gradlew test --tests "*Test"  # Run test classes
-./gradlew bootRun               # Start app
-./gradlew clean                 # Clean build
+# Install
+pip install -e .
+
+# Run development
+uvicorn app.main:app --reload --port 8080
+
+# Run tests
+pytest tests/unit/ -v
+
+# Lint
+ruff check app/ tests/
+
+# Type check
+mypy app/ --ignore-missing-imports
 ```
+
+## Environment Variables
+
+Copy `.env.example` to `.env` and configure:
+- `DATABASE_HOST`, `DATABASE_PORT`, `DATABASE_NAME`, `DATABASE_USER`, `DATABASE_PASSWORD`
+- `OPENROUTER_API_KEY`
+- `JWT_SECRET_KEY`

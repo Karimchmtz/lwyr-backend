@@ -22,16 +22,19 @@ services:
       dockerfile: Dockerfile
     container_name: lwyr-app
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/lwyr_db
-      SPRING_DATASOURCE_USERNAME: lwyr_user
-      SPRING_DATASOURCE_PASSWORD: lwyr_password
+      DATABASE_HOST: postgres
+      DATABASE_PORT: 5432
+      DATABASE_NAME: lwyr_db
+      DATABASE_USER: lwyr_user
+      DATABASE_PASSWORD: lwyr_password
     ports:
       - "8080:8080"
     depends_on:
       postgres:
         condition: service_healthy
     volumes:
-      - ./src:/app/src
+      - ./app:/app/app
+      - ./resources:/app/resources
 
 volumes:
   postgres_data:

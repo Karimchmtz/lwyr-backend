@@ -1,10 +1,21 @@
-FROM eclipse-temurin:21-jdk-alpine AS builder
-WORKDIR /app
-COPY . .
-RUN ./gradlew bootJar -x test
+FROM python:3.11-slim
 
-FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
-COPY --from=builder /app/build/libs/*.jar app.jar
+
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY pyproject.toml uv.lock* ./
+
+RUN pip install --no-cache-dir uv && \
+    uv pip install --system --no-cache .
+
+COPY . .
+
 EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "app.jar"]
+
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8080"]
