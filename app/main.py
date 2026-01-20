@@ -32,13 +32,8 @@ async def lifespan(app: FastAPI) -> None:
     """Application lifespan events."""
     logger.info("Starting Lwyr application...")
     logger.info(f"Database: {settings.database_host}:{settings.database_port}/{settings.database_name}")
-
-    logger.info("Creating database tables...")
-    metadata.create_all(bind=engine)
-
     logger.info("Application started successfully")
     yield
-
     logger.info("Shutting down application...")
     logger.info("Application shut down")
 
@@ -113,6 +108,16 @@ async def root() -> dict:
 
 
 if __name__ == "__main__":
+    import sys
+    from alembic.config import Config
+    from alembic.command import upgrade
+
+    if len(sys.argv) > 1 and sys.argv[1] == "migrate":
+        alembic_cfg = Config("alembic.ini")
+        upgrade(alembic_cfg, "head")
+        print("Migrations applied successfully")
+        sys.exit(0)
+
     import uvicorn
     uvicorn.run(
         "app.main:app",
